@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sketchnote calc</title>
+    <style>
+        html {
+            margin: 0.5em;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #textarea {
+            height: 50vh;
+            width: 100%;
+            resize: vertical;
+        }
+
+        #result {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .green {
+            background-color: #cfc;
+        }
+
+        .lightgreen {
+            background-color: #efc;
+        }
+
+        .yellow {
+            background-color: #ffa;
+        }
+
+        .red {
+            background-color: #fba;
+        }
+
+        .separator {
+            padding-right: 0.5em;
+        }
+    </style>
+</head>
+
+<body>
+    <textarea id="textarea"></textarea>
+    <div id="result"></div>
+    <script>
+        const textArea = document.getElementById('textarea');
+        const result = document.getElementById('result');
+
+        const HALF_ROWS_BY_3 = 33;
+        const ROWS_BY_3 = 69;
+        const ABSOLUTE_VALUE = 94;
+
+        textArea.addEventListener('input', e => {
+            const value = e.target.value;
+            const wordsArray = value.trim().replace(/\s+/g, ' ').split(' ');
+
+            let newText = convertGroup(wordsArray.slice(0, HALF_ROWS_BY_3), 'green');
+            newText += ' ' + convertGroup(wordsArray.slice(HALF_ROWS_BY_3, ROWS_BY_3), 'lightgreen');
+            newText += ' ' + convertGroup(wordsArray.slice(ROWS_BY_3, ABSOLUTE_VALUE), 'yellow');
+            newText += ' ' + convertGroup(wordsArray.slice(ABSOLUTE_VALUE, wordsArray.length), 'red');
+
+            result.innerHTML = newText
+                .trim()
+                .replace(/<span class="separator (green|lightgreen|yellow|red)"><\/span>$/, '');
+        });
+
+        function convertGroup(group, className) {
+            if (!group.length)
+                return '';
+
+            const separator = `<span class="separator ${className}"></span>`;
+            return group
+                .map(w => wrapWithSpan(w, className))
+                .join(separator) + separator;
+        }
+
+        function wrapWithSpan(str, className) {
+            return str
+                .split('')
+                .map(c => `<span class="${className}">${c}</span>`)
+                .join('');
+        }
+    </script>
+</body>
+
+</html>
